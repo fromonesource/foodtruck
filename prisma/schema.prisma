@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Operator {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String
+  hashedPassword String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  trucks         Truck[]
+}
+
+model Truck {
+  id           String        @id @default(cuid())
+  name         String
+  cuisineType  String
+  isLive       Boolean       @default(false)
+  lastLat      Float?
+  lastLng      Float?
+  operatorId   String
+  operator     Operator      @relation(fields: [operatorId], references: [id])
+  subscription Subscription?
+  gpsEvents    GpsEvent[]
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model GpsEvent {
+  id        String   @id @default(cuid())
+  lat       Float
+  lng       Float
+  truckId   String
+  truck     Truck    @relation(fields: [truckId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id        String   @id @default(cuid())
+  itemName  String
+  price     Float
+  lat       Float
+  lng       Float
+  truckId   String
+  truck     Truck    @relation(fields: [truckId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  tier      String   // "basic" | "pro" | "enterprise"
+  priceUsd  Int
+  truckId   String   @unique
+  truck     Truck    @relation(fields: [truckId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
