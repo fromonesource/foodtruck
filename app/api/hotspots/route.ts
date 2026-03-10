@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { clusterPoints } from "@/lib/geo";
 import type { ApiResponse, HotspotCluster } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/hotspots — return transaction clusters within 0.25 miles,
 // count > 1 in the last 2 hours, ranked by volume
 export async function GET() {
